@@ -1,0 +1,72 @@
+module Chemical_function # A module that will manage all the functions we need
+  
+  def find_chain(name = @name) #Finds base chain by comparing the input name against a set list
+        carbon=Hash.new(0)
+        carbon={"Pent"=>5, "but"=>4, "prop"=>3, "meth"=>1, "eth"=>2}
+        carbon.each_pair do |k,v|
+          if name=~/#{k}/i
+              puts "Base chain is #{k}, containing #{v} carbon atoms"
+              return v #returns the value(number of cabon atoms here) of the matched key
+          end
+        end   
+  end
+    
+  def find_suffix(name = @name) #Finds the main functional group
+        suffix=Hash.new(0)
+    suffix = {:carboxy_acid => "oic acid", :amides => "amide", :nitriles=> "nitrile", :aldehyde=> "al", :ketones=> "ketone",:alcohol=> "ol",:Amines=> "amine", :alkyne=> "yne", :alkene => "en", :alkane => "an"} 
+        suffix.each_pair do|k,v|
+           if name=~/#{v}$/ #Compare values in hash against name to find a match. The list has been set in terms of priority
+                print "Main functional group is #{k}, "
+                @main="#{v}"
+                @key=@main #assign matched group to an instance variable. This is helpful when finding the location of the group
+                location(@key) #calls function to find location, passes instance variable key as parameter
+                return k   # retuens key of matched value, ie, the name of functional group    
+           end
+                end
+        end
+    
+  def func_group(name=@name) #function to find functional groups other than main group
+      func_groups=Hash.new(0)
+      func_groups={:carboxy_acid => "oic acid", :amides => "amide", :nitriles=> "nitrile", :aldehyde=> "al", :ketones=> "ketone",:alcohol=> "ol",:Amines=> "amine", :alkyne=> "yne", :alkene => "en", :alkane => "an"}  
+      func_groups.each_pair do|k,v|
+        if name=~/(#{v})/ 
+          if $1!=@main #checks if matched group is any group EXCEPT the main group.
+                puts "\n Other functional group = #{k},"
+                @key= "#{v}" #assigns matched value to key to find its location
+                location(@key) #call to function to find location of matched group
+              end #no return function because the loop needs to run more than once
+        end  
+      end 
+      end
+      
+   def location(key=@key,name=@name) #takes inputs: key for which location is to be found and name against which key is to be compared
+   # name = "prop-3-an-2-al-1-ol"
+     re=/((?>\d)(?>\s|-))(?=#{key})/
+     if re =~ name 
+       print " Position = " 
+       print $1
+     end
+   end
+
+end 
+  
+  class Chemical_name
+   include Chemical_function
+   #extend  Chemical_function
+   
+   attr_reader :main ,:name
+   
+   def initialize (name=nil)
+     @name = name
+     
+   end
+  end     
+
+  
+a=Chemical_name.new("prop-3-an-2-ol-1-al")
+a.find_chain  #("prop-3-an-2-ol-1-al")
+a.find_suffix#("prop-3-an-2-ol-1-al") 
+a.func_group#("prop-3-an-2-ol-1-al")
+
+
+ 
